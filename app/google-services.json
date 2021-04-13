@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "927781819949",
+    "project_id": "panicbutton-2fbd2",
+    "storage_bucket": "panicbutton-2fbd2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927781819949:android:04f86ad4b165191d220aa4",
+        "android_client_info": {
+          "package_name": "com.biust.ac.bw.panicbutton"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "927781819949-fbkklvu1t5f78qlmd70dgdr2cgm29lnu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.biust.ac.bw.panicbutton",
+            "certificate_hash": "d0dd2e46f869f26d04265d3f6c34015a18a9b311"
+          }
+        },
+        {
+          "client_id": "927781819949-i0q5jh9g6m52vdkvli7a3b2heal158e7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqWioq3xnzVXjxqQH8EWOiDQ8OFQylQxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "927781819949-i0q5jh9g6m52vdkvli7a3b2heal158e7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

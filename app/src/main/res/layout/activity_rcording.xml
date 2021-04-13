@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RecordingActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/recordMsg"
+        android:text="record Message"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/recordBtn"
+        android:textSize="25sp"/>
+
+    <Button
+        android:id="@+id/recordBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="93dp"
+        android:text="Tap and Hold to record" />
+
+
+    <Button
+        android:id="@+id/stopBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recordBtn"
+        android:layout_alignStart="@+id/button"
+        android:layout_alignLeft="@+id/button"
+        android:layout_centerInParent="true"
+        android:text="Stop"
+        tools:ignore="UnknownId" />
+
+</RelativeLayout>
+
