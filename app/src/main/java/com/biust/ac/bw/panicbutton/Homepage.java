@@ -16,32 +16,53 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.chaquo.python.PyObject;
+import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Homepage extends AppCompatActivity implements LocationListener{
+public class Homepage extends AppCompatActivity implements LocationListener,Runnable{
 
     Button toRecord;
     protected LocationManager locationManager;
     protected LocationListener locationListener;
     protected Context context;
     TextView txtLat;
-    String lat;
+    String lat, standUp;
     String provider;
     protected String latitude, longitude, userId;
     protected boolean gps_enabled, network_enabled;
     FirebaseDatabase db;
     DatabaseReference reference;
 
+    //ml things
+    private static final String MODEL_FILENAME = "file:///android_asset/model.tflite";
+    private static final String LABEL_FILENAME = "file:///android_asset/conv_actions_labels.txt";
+    private static final String INPUT_DATA_NAME = "decoded_sample_data:0";
+    private static final String INPUT_SAMPLE_RATE_NAME = "decoded_sample_data:1";
+    private static final String OUTPUT_NODE_NAME = "labels_softmax";
+    
+    private TensorFlowInferenceInterface mInferenceInterface;
+    private List<String> mLabels = new ArrayList<String>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
+
+        if (! Python.isStarted()) {
+            Python.start(new AndroidPlatform(Homepage.this));
+        }
 
         toRecord = findViewById(R.id.toRecord);
 
@@ -71,10 +92,19 @@ public class Homepage extends AppCompatActivity implements LocationListener{
         toRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Homepage.this, RecordingActivity.class));
+                //startActivity(new Intent(Homepage.this, AutoDetectionActivity.class));
+                //standUp=getHelloWorld();
+                //txtLat.setText(standUp);
+             startActivity(new Intent(Homepage.this, WAVRecordingActivity.class));
             }
         });
 
+    }
+
+    private String getHelloWorld() {
+            Python phython = Python.getInstance();
+            PyObject pythonFile= phython.getModule("hello");
+            return pythonFile.callAttr("helloWorld").toString();
     }
 
     @Override
@@ -106,5 +136,15 @@ public class Homepage extends AppCompatActivity implements LocationListener{
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
         Log.d("Latitude","status");
+    }
+
+    @Override
+    public void run() {
+
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
     }
 }

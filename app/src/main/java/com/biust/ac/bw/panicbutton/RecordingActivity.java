@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -45,13 +46,19 @@ public class RecordingActivity extends AppCompatActivity {
     String fileName;
     String userId;
 
+    private String mFileName = null;
+    private String mFilePath = null;
+
+    private DBHelper mDatabase;
+
     private StorageReference mStorageRef;
 
     private FirebaseUser mAuth;
-    private FirebaseDatabase database;
     private DatabaseReference myRef;
 
     ProgressDialog mProgress;
+
+    private static final String LOG_TAG = "RecordingService";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +68,7 @@ public class RecordingActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PackageManager.PERMISSION_GRANTED);
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PackageManager.PERMISSION_GRANTED);
 
-        database = FirebaseDatabase.getInstance();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Audios");
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -73,19 +80,13 @@ public class RecordingActivity extends AppCompatActivity {
         mStopBtn = findViewById(R.id.stopBtn);
         mRecordMsg = findViewById(R.id.recordMsg);
 
-        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        fileName += "/DVMLAudios/AudioRecorded.mp3";
-
 
         mRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    startRecording();
-                    mRecordMsg.setText("Recording Started ...");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                startRecording();
+                mRecordMsg.setText("Recording Started ...");
+
 
             }
         });
@@ -100,24 +101,38 @@ public class RecordingActivity extends AppCompatActivity {
 
     }
 
-    private void startRecording() throws IOException {
+    private void startRecording() {
+        setFileNameAndPath();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
-        mediaRecorder.setOutputFile(fileName);
+        mediaRecorder.setOutputFile(mFilePath);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
-        mediaRecorder.prepare();
-        mediaRecorder.start();
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
 
-        Log.d("mediaRecorder value", mediaRecorder.toString());
+            //startTimer();
+            //startForeground(1, createNotification());
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "prepare() failed");
+            Log.e(LOG_TAG, e.getMessage());
+        }
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
     }
 
     private void stopRecording(String fileName) {
         mediaRecorder.stop();
         mediaRecorder.release();
         mediaRecorder = null;
-        uploadAudio(fileName);
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+        this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        uploadAudio(mFilePath);
     }
 
     private void uploadAudio(String fileName) {
@@ -148,7 +163,24 @@ public class RecordingActivity extends AppCompatActivity {
 
     }
 
+    public void setFileNameAndPath() {
+        int count = 0;
+        File f;
+
+        do {
+            count++;
+
+            mFileName = getString(R.string.default_file_name)
+                    + "_" + count + ".wav";
+            mFilePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mFilePath += "/DVMLAudios/" + mFileName;
+
+            f = new File(mFilePath);
+        } while (f.exists() && !f.isDirectory());
+    }
+
     public void updateUI(FirebaseUser account) {
+
     }
 
     @Override

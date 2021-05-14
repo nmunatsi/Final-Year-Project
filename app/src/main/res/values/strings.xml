@@ -2,5 +2,6 @@
     <string name="app_name">Panic Button</string>
     <string name="facebook_app_id">458431825605149</string>
     <string name="fb_login_protocol_scheme">fb458431825605149</string>
+    <string name="default_file_name">distress call auodio</string>
 
 </resources>
