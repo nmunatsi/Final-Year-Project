@@ -95,7 +95,7 @@ public class Homepage extends AppCompatActivity implements LocationListener,Runn
                 //startActivity(new Intent(Homepage.this, AutoDetectionActivity.class));
                 //standUp=getHelloWorld();
                 //txtLat.setText(standUp);
-             startActivity(new Intent(Homepage.this, WAVRecordingActivity.class));
+             //startActivity(new Intent(Homepage.this, WAVRecordingActivity.class));
             }
         });
 

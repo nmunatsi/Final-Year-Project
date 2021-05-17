@@ -11,6 +11,7 @@ from tensorflow import keras
 import librosa
 import numpy as np
 import os
+import joblib
 
 
 def get_prediction(path):
@@ -19,11 +20,9 @@ def get_prediction(path):
     lst = []
     for subdir, dirs, files in os.walk(path):
         for file in files:
-            print("file:",file)
             try:
                 #Load librosa array, obtain mfcss, store the file and the mcss information in a new array
                 (X, sample_rate) = librosa.load(os.path.join(subdir,file), res_type='kaiser_fast')
-                print("SR:",sample_rate)
                 mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T,axis=0)
                 # The instruction below converts the labels (from 1 to 8) to a series from 0 to 7
                 # This is because our predictor needs to start from 0 otherwise it will try to predict also 0.
@@ -34,10 +33,25 @@ def get_prediction(path):
             except ValueError:
                 continue
 
-    X = zip(*lst)
+    zippedList = zip(*lst)
 
-    X = np.asarray(X)
+    print("zippedList",zippedList)
 
-    x_testcnn = np.expand_dims(X, axis=2)
+    zippedListAsnumpay = np.asarray(zippedList)
 
-    return model.predict_classes(x_testcnn)
+    X_name = 'X.joblib'
+
+    save_dir = '/storage/emulated/0/Ravtess_model'
+
+    savedX = joblib.dump(zippedListAsnumpay, os.path.join(save_dir, X_name))
+
+    testFile = joblib.load('/storage/emulated/0/Ravtess_model/X.joblib')
+
+    x_testcnn = np.expand_dims(zippedListAsnumpay, axis=2)
+
+    print("testInput:", x_testcnn)
+
+    predictions = model.predict_classes(x_testcnn)
+    print(predictions)
+
+    return predictions
